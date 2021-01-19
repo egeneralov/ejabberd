@@ -1,0 +1,17 @@
+---
+# tasks file for egeneralov.ejabberd
+
+- file:
+    path: /opt/ejabberd/conf/
+    state: directory
+    owner: 110
+    group: 117
+
+- name: "ejabberd : configure"
+  copy:
+    # dest: /etc/ejabberd/ejabberd.yml
+    dest: /opt/ejabberd/conf/ejabberd.yml
+    content: |
+      {{ configuration | to_yaml }}
+
+- include_tasks: "{{ deployment_type }}.yml"

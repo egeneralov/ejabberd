@@ -1,0 +1,29 @@
+---
+
+# - name: "ejabberd : install"
+#   apt:
+#     name:
+#       - ejabberd
+#     state: latest
+
+- get_url:
+    url: https://www.process-one.net/downloads/downloads-action.php?file=/{{ version }}/ejabberd_{{ version }}-0_amd64.deb
+    dest: /opt/ejabberd_{{ version }}-0_amd64.deb
+
+- apt:
+    deb: /opt/ejabberd_{{ version }}-0_amd64.deb
+
+- name: "ejabberd : manage"
+  systemd:
+    name: ejabberd.service
+    state: "restarted"
+    enabled: yes
+
+- wait_for:
+    timeout: 10
+
+- shell: "/opt/ejabberd-{{ version }}/bin/ejabberdctl register {{ item.key }} {{ ansible_host }} {{ item.value }}"
+  failed_when: false
+  register: cmd
+  changed_when: cmd.stdout == 'User {{ item.key }}@{{ ansible_host }} successfully registered'
+  with_dict: "{{ users }}"

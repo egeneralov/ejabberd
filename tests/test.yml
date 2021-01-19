@@ -1,0 +1,12 @@
+---
+
+- name: ejabberd
+  hosts: ejabberd
+  gather_facts: yes
+  vars:
+    deployment_type: deb
+    users:
+      admin: admin
+      user: user
+  roles:
+    - egeneralov.ejabberd

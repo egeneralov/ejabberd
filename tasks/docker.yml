@@ -1,0 +1,23 @@
+---
+
+- import_role:
+    name: egeneralov.docker
+
+- apt:
+    name: python-docker
+
+- name: "ejabberd : docker"
+  docker_container:
+    name: ejabberd
+    image: "ejabberd/ecs:{{ version }}"
+    state: started
+    restart: yes
+    restart_policy: unless-stopped
+    network_mode: host
+    volumes: "{{ docker_volumes }}"
+
+- shell: "docker exec -i ejabberd bin/ejabberdctl register {{ item.key }} {{ ansible_host }} {{ item.value }}"
+  failed_when: false
+  register: cmd
+  changed_when: cmd.stdout == 'User {{ item.key }}@{{ ansible_host }} successfully registered'
+  with_dict: "{{ users }}"
